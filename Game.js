@@ -14,8 +14,8 @@ let GameBoard = class GameBoard extends LitElement {
         this.grid = Array.from({ length: this.rows }, () => Array(this.columns).fill(false));
         this.playerIndexX = 10;
         this.playerIndexY = 10;
-        this.cellWidth = 30; // doubled cell size
-        this.cellHeight = 30; // doubled cell size
+        this.cellWidth = 40; // updated cell size
+        this.cellHeight = 40; // updated cell size
     }
     firstUpdated() {
         this.canvas = this.shadowRoot.querySelector('canvas');
@@ -46,7 +46,7 @@ let GameBoard = class GameBoard extends LitElement {
             for (let column = 0; column < this.columns; column++) {
                 const cellX = this.cellWidth * column;
                 const cellY = this.cellHeight * row;
-                this.ctx.fillStyle = this.grid[row][column] ? 'red' : 'white';
+                this.ctx.fillStyle = this.grid[row][column] ? 'rgba(255, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)';
                 this.ctx.fillRect(cellX, cellY, this.cellWidth, this.cellHeight);
                 this.ctx.strokeRect(cellX, cellY, this.cellWidth, this.cellHeight);
             }
@@ -56,7 +56,7 @@ let GameBoard = class GameBoard extends LitElement {
     drawPlayer() {
         const playerPixelX = this.playerIndexX * this.cellWidth;
         const playerPixelY = this.playerIndexY * this.cellHeight;
-        this.ctx.fillStyle = 'green';
+        this.ctx.fillStyle = 'rgba(0, 128, 0, 0.5)';
         this.ctx.fillRect(playerPixelX, playerPixelY, this.cellWidth, this.cellHeight);
     }
     handleKeyPress(event) {
@@ -85,7 +85,7 @@ let GameBoard = class GameBoard extends LitElement {
         this.drawGrid();
     }
     render() {
-        return html `<canvas width="600" height="600"></canvas>`; // adjusted canvas size
+        return html `<canvas width="800" height="800"></canvas>`; // adjusted canvas size
     }
 };
 GameBoard.styles = css `

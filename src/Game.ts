@@ -15,8 +15,8 @@ export class GameBoard extends LitElement {
   @property({ type: Array }) grid: boolean[][] = Array.from({ length: this.rows }, () => Array(this.columns).fill(false));
   @property({ type: Number }) playerIndexX = 10;
   @property({ type: Number }) playerIndexY = 10;
-  @property({ type: Number }) cellWidth = 30; // doubled cell size
-  @property({ type: Number }) cellHeight = 30; // doubled cell size
+  @property({ type: Number }) cellWidth = 40; // updated cell size
+  @property({ type: Number }) cellHeight = 40; // updated cell size
 
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
@@ -53,7 +53,7 @@ export class GameBoard extends LitElement {
       for (let column = 0; column < this.columns; column++) {
         const cellX = this.cellWidth * column;
         const cellY = this.cellHeight * row;
-        this.ctx.fillStyle = this.grid[row][column] ? 'red' : 'white';
+        this.ctx.fillStyle = this.grid[row][column] ? 'rgba(255, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)';
         this.ctx.fillRect(cellX, cellY, this.cellWidth, this.cellHeight);
         this.ctx.strokeRect(cellX, cellY, this.cellWidth, this.cellHeight);
       }
@@ -64,7 +64,7 @@ export class GameBoard extends LitElement {
   drawPlayer() {
     const playerPixelX = this.playerIndexX * this.cellWidth;
     const playerPixelY = this.playerIndexY * this.cellHeight;
-    this.ctx.fillStyle = 'green';
+    this.ctx.fillStyle = 'rgba(0, 128, 0, 0.5)';
     this.ctx.fillRect(playerPixelX, playerPixelY, this.cellWidth, this.cellHeight);
   }
 
@@ -95,6 +95,6 @@ export class GameBoard extends LitElement {
   }
 
   override render() {
-    return html`<canvas width="600" height="600"></canvas>`; // adjusted canvas size
+    return html`<canvas width="800" height="800"></canvas>`; // adjusted canvas size
   }
 }

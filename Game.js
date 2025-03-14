@@ -19,6 +19,7 @@ let GameBoard = class GameBoard extends LitElement {
         this.cellWidth = 40; // updated cell size
         this.cellHeight = 40; // updated cell size
         this.difficulty = 0.3; // parameter to set difficulty level
+        this.prizeVisible = true; // property to track prize visibility
         this.playerImage = new Image();
         this.obstacleImage = new Image();
         this.prizeImage = new Image();
@@ -39,6 +40,11 @@ let GameBoard = class GameBoard extends LitElement {
         this.ensurePlayerNotOnObstacle();
         this.ensurePrizeNotOnObstacle();
         window.addEventListener('keydown', this.handleKeyPress.bind(this));
+        // Set up blink animation for the prize cell
+        setInterval(() => {
+            this.prizeVisible = !this.prizeVisible;
+            this.drawGrid();
+        }, 500); // Toggle visibility every 500ms
     }
     randomizeObstacles() {
         for (let row = 0; row < this.rows; row++) {
@@ -67,7 +73,13 @@ let GameBoard = class GameBoard extends LitElement {
             for (let column = 0; column < this.columns; column++) {
                 const cellX = this.cellWidth * column;
                 const cellY = this.cellHeight * row;
-                if (this.grid[row][column]) {
+                // Check if the current cell is the prize cell
+                if (row === this.prizeIndexY && column === this.prizeIndexX && this.prizeVisible) {
+                    // Highlight the prize cell with a special background color
+                    this.ctx.fillStyle = 'rgba(255, 215, 0, 0.3)'; // Light gold color
+                    this.ctx.fillRect(cellX, cellY, this.cellWidth, this.cellHeight);
+                }
+                else if (this.grid[row][column]) {
                     this.ctx.drawImage(this.obstacleImage, cellX, cellY, this.cellWidth, this.cellHeight);
                 }
                 else {
@@ -88,7 +100,12 @@ let GameBoard = class GameBoard extends LitElement {
     drawPrize() {
         const prizePixelX = this.prizeIndexX * this.cellWidth;
         const prizePixelY = this.prizeIndexY * this.cellHeight;
+        // Draw the prize image
         this.ctx.drawImage(this.prizeImage, prizePixelX, prizePixelY, this.cellWidth, this.cellHeight);
+        // Add a border around the prize
+        this.ctx.strokeStyle = 'gold';
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeRect(prizePixelX, prizePixelY, this.cellWidth, this.cellHeight);
     }
     handleKeyPress(event) {
         switch (event.key) {
@@ -173,6 +190,9 @@ __decorate([
 __decorate([
     property({ type: Number })
 ], GameBoard.prototype, "difficulty", void 0);
+__decorate([
+    property({ type: Boolean })
+], GameBoard.prototype, "prizeVisible", void 0);
 GameBoard = __decorate([
     customElement('game-board')
 ], GameBoard);

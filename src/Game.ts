@@ -32,6 +32,7 @@ export class GameBoard extends LitElement {
   @property({ type: Number }) cellWidth = 40; // updated cell size
   @property({ type: Number }) cellHeight = 40; // updated cell size
   @property({ type: Number }) difficulty = 0.3; // parameter to set difficulty level
+  @property({ type: Boolean }) prizeVisible = true; // property to track prize visibility
 
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
@@ -58,6 +59,12 @@ export class GameBoard extends LitElement {
     this.ensurePlayerNotOnObstacle();
     this.ensurePrizeNotOnObstacle();
     window.addEventListener('keydown', this.handleKeyPress.bind(this));
+
+    // Set up blink animation for the prize cell
+    setInterval(() => {
+      this.prizeVisible = !this.prizeVisible;
+      this.drawGrid();
+    }, 500); // Toggle visibility every 500ms
   }
 
   randomizeObstacles() {
@@ -90,7 +97,13 @@ export class GameBoard extends LitElement {
       for (let column = 0; column < this.columns; column++) {
         const cellX = this.cellWidth * column;
         const cellY = this.cellHeight * row;
-        if (this.grid[row][column]) {
+
+        // Check if the current cell is the prize cell
+        if (row === this.prizeIndexY && column === this.prizeIndexX && this.prizeVisible) {
+          // Highlight the prize cell with a special background color
+          this.ctx.fillStyle = 'rgba(255, 215, 0, 0.3)'; // Light gold color
+          this.ctx.fillRect(cellX, cellY, this.cellWidth, this.cellHeight);
+        } else if (this.grid[row][column]) {
           this.ctx.drawImage(this.obstacleImage, cellX, cellY, this.cellWidth, this.cellHeight);
         } else {
           this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
@@ -112,7 +125,14 @@ export class GameBoard extends LitElement {
   drawPrize() {
     const prizePixelX = this.prizeIndexX * this.cellWidth;
     const prizePixelY = this.prizeIndexY * this.cellHeight;
+    
+    // Draw the prize image
     this.ctx.drawImage(this.prizeImage, prizePixelX, prizePixelY, this.cellWidth, this.cellHeight);
+    
+    // Add a border around the prize
+    this.ctx.strokeStyle = 'gold';
+    this.ctx.lineWidth = 3;
+    this.ctx.strokeRect(prizePixelX, prizePixelY, this.cellWidth, this.cellHeight);
   }
 
   handleKeyPress(event: KeyboardEvent) {

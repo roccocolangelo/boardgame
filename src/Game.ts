@@ -31,6 +31,7 @@ export class GameBoard extends LitElement {
   @property({ type: Number }) prizeIndexY = Math.floor(Math.random() * 20);
   @property({ type: Number }) cellWidth = 40; // updated cell size
   @property({ type: Number }) cellHeight = 40; // updated cell size
+  @property({ type: Number }) difficulty = 0.3; // parameter to set difficulty level
 
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
@@ -60,10 +61,9 @@ export class GameBoard extends LitElement {
   }
 
   randomizeObstacles() {
-    const obstacleDensity = 0.3; // Adjust this value to set difficulty level
     for (let row = 0; row < this.rows; row++) {
       for (let column = 0; column < this.columns; column++) {
-        if (Math.random() < obstacleDensity) {
+        if (Math.random() < this.difficulty) {
           this.grid[row][column] = true;
         }
       }

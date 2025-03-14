@@ -10,6 +10,7 @@ export declare class GameBoard extends LitElement {
     prizeIndexY: number;
     cellWidth: number;
     cellHeight: number;
+    difficulty: number;
     private canvas;
     private ctx;
     private playerImage;

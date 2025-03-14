@@ -18,6 +18,7 @@ let GameBoard = class GameBoard extends LitElement {
         this.prizeIndexY = Math.floor(Math.random() * 20);
         this.cellWidth = 40; // updated cell size
         this.cellHeight = 40; // updated cell size
+        this.difficulty = 0.3; // parameter to set difficulty level
         this.playerImage = new Image();
         this.obstacleImage = new Image();
         this.prizeImage = new Image();
@@ -40,10 +41,9 @@ let GameBoard = class GameBoard extends LitElement {
         window.addEventListener('keydown', this.handleKeyPress.bind(this));
     }
     randomizeObstacles() {
-        const obstacleDensity = 0.3; // Adjust this value to set difficulty level
         for (let row = 0; row < this.rows; row++) {
             for (let column = 0; column < this.columns; column++) {
-                if (Math.random() < obstacleDensity) {
+                if (Math.random() < this.difficulty) {
                     this.grid[row][column] = true;
                 }
             }
@@ -170,6 +170,9 @@ __decorate([
 __decorate([
     property({ type: Number })
 ], GameBoard.prototype, "cellHeight", void 0);
+__decorate([
+    property({ type: Number })
+], GameBoard.prototype, "difficulty", void 0);
 GameBoard = __decorate([
     customElement('game-board')
 ], GameBoard);

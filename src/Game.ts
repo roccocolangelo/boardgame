@@ -20,13 +20,18 @@ export class GameBoard extends LitElement {
 
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
+  private playerImage = new Image();
+  private obstacleImage = new Image();
 
   override firstUpdated() {
     this.canvas = this.shadowRoot!.querySelector('canvas')!;
     this.ctx = this.canvas.getContext('2d')!;
+    this.playerImage.src = 'asset/player.png';
+    this.obstacleImage.src = 'asset/obstacle.jpeg';
+    this.playerImage.onload = () => this.drawGrid(); // Ensure images are loaded before drawing
+    this.obstacleImage.onload = () => this.drawGrid(); // Ensure images are loaded before drawing
     this.randomizeObstacles();
     this.ensurePlayerNotOnObstacle();
-    this.drawGrid();
     window.addEventListener('keydown', this.handleKeyPress.bind(this));
   }
 
@@ -53,9 +58,13 @@ export class GameBoard extends LitElement {
       for (let column = 0; column < this.columns; column++) {
         const cellX = this.cellWidth * column;
         const cellY = this.cellHeight * row;
-        this.ctx.fillStyle = this.grid[row][column] ? 'rgba(255, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)';
-        this.ctx.fillRect(cellX, cellY, this.cellWidth, this.cellHeight);
-        this.ctx.strokeRect(cellX, cellY, this.cellWidth, this.cellHeight);
+        if (this.grid[row][column]) {
+          this.ctx.drawImage(this.obstacleImage, cellX, cellY, this.cellWidth, this.cellHeight);
+        } else {
+          this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          this.ctx.fillRect(cellX, cellY, this.cellWidth, this.cellHeight);
+          this.ctx.strokeRect(cellX, cellY, this.cellWidth, this.cellHeight);
+        }
       }
     }
     this.drawPlayer();
@@ -64,8 +73,7 @@ export class GameBoard extends LitElement {
   drawPlayer() {
     const playerPixelX = this.playerIndexX * this.cellWidth;
     const playerPixelY = this.playerIndexY * this.cellHeight;
-    this.ctx.fillStyle = 'rgba(0, 128, 0, 0.5)';
-    this.ctx.fillRect(playerPixelX, playerPixelY, this.cellWidth, this.cellHeight);
+    this.ctx.drawImage(this.playerImage, playerPixelX, playerPixelY, this.cellWidth, this.cellHeight);
   }
 
   handleKeyPress(event: KeyboardEvent) {

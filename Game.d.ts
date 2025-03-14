@@ -10,6 +10,8 @@ export declare class GameBoard extends LitElement {
     cellHeight: number;
     private canvas;
     private ctx;
+    private playerImage;
+    private obstacleImage;
     firstUpdated(): void;
     randomizeObstacles(): void;
     ensurePlayerNotOnObstacle(): void;

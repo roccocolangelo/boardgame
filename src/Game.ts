@@ -4,23 +4,52 @@ import { customElement, property } from 'lit/decorators.js';
 @customElement('game-board')
 export class GameBoard extends LitElement {
   static override styles = css`
-    canvas {
-      border: 1px solid black;
-      box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
-    }
-    .player {
-      background-color: rgba(0, 128, 0, 0.5);
-    }
-    .obstacle {
-      background-color: rgba(255, 0, 0, 0.5);
-    }
-    .cell {
-      background-color: rgba(255, 255, 255, 0.5);
-    }
-    .prize {
-      background-color: rgba(255, 215, 0, 0.5); /* Gold color for the prize */
-    }
-  `;
+  canvas {
+    border: 1px solid black;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+  }
+  .player {
+    background-color: rgba(0, 128, 0, 0.5);
+  }
+  .obstacle {
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+  .cell {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  .prize {
+    background-color: rgba(255, 215, 0, 0.5); /* Gold color for the prize */
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 5px solid #ffcc00; /* Cartoon-style border */
+    border-radius: 15px; /* Rounded corners */
+    width: 80%;
+    text-align: center;
+    font-family: 'Comic Sans MS', cursive, sans-serif; /* Fun font */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+  }
+  .modal.show {
+    display: block;
+  }
+  .modal-content span {
+    font-size: 24px; /* Larger close icon */
+    color: #ff0000; /* Red color for close icon */
+  }
+`;
 
   @property({ type: Number }) rows = 20;
   @property({ type: Number }) columns = 20;
@@ -33,6 +62,7 @@ export class GameBoard extends LitElement {
   @property({ type: Number }) cellHeight = 40; // updated cell size
   @property({ type: Number }) difficulty = 0.3; // parameter to set difficulty level
   @property({ type: Boolean }) prizeVisible = true; // property to track prize visibility
+  @property({ type: Boolean }) showModal = false; // property to track modal visibility
 
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
@@ -125,10 +155,10 @@ export class GameBoard extends LitElement {
   drawPrize() {
     const prizePixelX = this.prizeIndexX * this.cellWidth;
     const prizePixelY = this.prizeIndexY * this.cellHeight;
-    
+
     // Draw the prize image
     this.ctx.drawImage(this.prizeImage, prizePixelX, prizePixelY, this.cellWidth, this.cellHeight);
-    
+
     // Add a border around the prize
     this.ctx.strokeStyle = 'gold';
     this.ctx.lineWidth = 3;
@@ -164,11 +194,34 @@ export class GameBoard extends LitElement {
 
   checkWin() {
     if (this.playerIndexX === this.prizeIndexX && this.playerIndexY === this.prizeIndexY) {
-      alert('Congratulations! You reached the prize!');
+      this.showModal = true;
     }
   }
 
+  closeModal() {
+    this.showModal = false;
+    this.resetGame(); // Reset the game when the modal is closed
+  }
+
+  resetGame() {
+    this.grid = Array.from({ length: this.rows }, () => Array(this.columns).fill(false));
+    this.randomizeObstacles();
+    this.playerIndexX = 10;
+    this.playerIndexY = 10;
+    this.ensurePlayerNotOnObstacle();
+    this.ensurePrizeNotOnObstacle();
+    this.drawGrid();
+  }
+
   override render() {
-    return html`<canvas width="800" height="800"></canvas>`; // adjusted canvas size
+    return html`
+      <canvas width="800" height="800"></canvas>
+      <div class="modal ${this.showModal ? 'show' : ''}">
+        <div class="modal-content">
+          <span @click="${this.closeModal}" style="cursor: pointer;float:right;">&times;</span>
+          <p>Congratulations! You reached the prize!</p>
+        </div>
+      </div>
+    `;
   }
 }

@@ -12,6 +12,7 @@ export declare class GameBoard extends LitElement {
     cellHeight: number;
     difficulty: number;
     prizeVisible: boolean;
+    showModal: boolean;
     private canvas;
     private ctx;
     private playerImage;
@@ -26,6 +27,8 @@ export declare class GameBoard extends LitElement {
     drawPrize(): void;
     handleKeyPress(event: KeyboardEvent): void;
     checkWin(): void;
+    closeModal(): void;
+    resetGame(): void;
     render(): import("lit-html").TemplateResult<1>;
 }
 //# sourceMappingURL=Game.d.ts.map

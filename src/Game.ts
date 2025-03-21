@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import {gameStyle} from './GameStyles'; 
+import { gameStyle } from './GameStyles';
 
 @customElement('game-board')
 export class GameBoard extends LitElement {
@@ -11,8 +11,18 @@ export class GameBoard extends LitElement {
         background-color: #008cba;
         color: white;
       }
+      .timer {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin: 10px 0;
+        color: white;
+      }
+      .timer.warning {
+        color: red;
+      }
     `,
-  ];;
+  ];
 
   @property({ type: Number }) rows = 20;
   @property({ type: Number }) columns = 20;
@@ -26,6 +36,8 @@ export class GameBoard extends LitElement {
   @property({ type: Number }) difficulty = 0.3; // parameter to set difficulty level
   @property({ type: Boolean }) prizeVisible = true; // property to track prize visibility
   @property({ type: Boolean }) showModal = false; // property to track modal visibility
+  @property({ type: Number }) timer = 60; // property to track the timer (starting from 60 seconds)
+  private intervalId: number | null = null; // interval ID for the timer
 
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
@@ -58,6 +70,28 @@ export class GameBoard extends LitElement {
       this.prizeVisible = !this.prizeVisible;
       this.drawGrid();
     }, 500); // Toggle visibility every 500ms
+
+    // Initialize the timer
+    this.startTimer();
+  }
+
+  startTimer() {
+    this.timer = 60; // Start the timer from 60 seconds
+    this.intervalId = window.setInterval(() => {
+      this.timer--;
+      this.requestUpdate();
+      if (this.timer <= 0) {
+        this.stopTimer();
+        this.showModal = true; // Show the modal when time runs out
+      }
+    }, 1000); // Update the timer every second
+  }
+
+  stopTimer() {
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   }
 
   randomizeObstacles() {
@@ -158,6 +192,7 @@ export class GameBoard extends LitElement {
   checkWin() {
     if (this.playerIndexX === this.prizeIndexX && this.playerIndexY === this.prizeIndexY) {
       this.showModal = true;
+      this.stopTimer(); // Stop the timer when the player wins
     }
   }
 
@@ -174,10 +209,14 @@ export class GameBoard extends LitElement {
     this.ensurePlayerNotOnObstacle();
     this.ensurePrizeNotOnObstacle();
     this.drawGrid();
+    this.startTimer(); // Restart the timer when the game is reset
   }
 
   override render() {
     return html`
+      <div class="timer ${this.timer <= 10 ? 'warning' : ''}">
+        Time Left: ${this.timer} seconds
+      </div>
       <canvas width="800" height="800"></canvas>
       <div class="modal ${this.showModal ? 'show' : ''}">
         <div class="modal-content">

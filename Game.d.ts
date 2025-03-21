@@ -13,12 +13,16 @@ export declare class GameBoard extends LitElement {
     difficulty: number;
     prizeVisible: boolean;
     showModal: boolean;
+    timer: number;
+    private intervalId;
     private canvas;
     private ctx;
     private playerImage;
     private obstacleImage;
     private prizeImage;
     firstUpdated(): void;
+    startTimer(): void;
+    stopTimer(): void;
     randomizeObstacles(): void;
     ensurePlayerNotOnObstacle(): void;
     ensurePrizeNotOnObstacle(): void;

@@ -1,6 +1,6 @@
 import { LitElement } from 'lit';
 export declare class GameBoard extends LitElement {
-    static styles: import("lit").CSSResult;
+    static styles: import("lit").CSSResult[];
     rows: number;
     columns: number;
     grid: boolean[][];

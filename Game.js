@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { gameStyle } from './GameStyles';
 let GameBoard = class GameBoard extends LitElement {
     constructor() {
         super(...arguments);
@@ -25,6 +26,7 @@ let GameBoard = class GameBoard extends LitElement {
         this.obstacleImage = new Image();
         this.prizeImage = new Image();
     }
+    ;
     firstUpdated() {
         this.canvas = this.shadowRoot.querySelector('canvas');
         this.ctx = this.canvas.getContext('2d');
@@ -158,59 +160,21 @@ let GameBoard = class GameBoard extends LitElement {
       <div class="modal ${this.showModal ? 'show' : ''}">
         <div class="modal-content">
           <span @click="${this.closeModal}" style="cursor: pointer;float:right;">&times;</span>
-          <p>Congratulations! You reached the prize!</p>
+          <p>You Win!!</p>
         </div>
       </div>
     `;
     }
 };
-GameBoard.styles = css `
-  canvas {
-    border: 1px solid black;
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
-  }
-  .player {
-    background-color: rgba(0, 128, 0, 0.5);
-  }
-  .obstacle {
-    background-color: rgba(255, 0, 0, 0.5);
-  }
-  .cell {
-    background-color: rgba(255, 255, 255, 0.5);
-  }
-  .prize {
-    background-color: rgba(255, 215, 0, 0.5); /* Gold color for the prize */
-  }
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
-  }
-  .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 5px solid #ffcc00; /* Cartoon-style border */
-    border-radius: 15px; /* Rounded corners */
-    width: 80%;
-    text-align: center;
-    font-family: 'Comic Sans MS', cursive, sans-serif; /* Fun font */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow for depth */
-  }
-  .modal.show {
-    display: block;
-  }
-  .modal-content span {
-    font-size: 24px; /* Larger close icon */
-    color: #ff0000; /* Red color for close icon */
-  }
-`;
+GameBoard.styles = [
+    gameStyle,
+    css `
+      .test-class {
+        background-color: #008cba;
+        color: white;
+      }
+    `,
+];
 __decorate([
     property({ type: Number })
 ], GameBoard.prototype, "rows", void 0);

@@ -25,6 +25,21 @@ export declare class GameBoard extends LitElement {
     startTimer(): void;
     stopTimer(): void;
     randomizeObstacles(): void;
+    isPathAvailable(): boolean;
+    heuristic(a: {
+        x: number;
+        y: number;
+    }, b: {
+        x: number;
+        y: number;
+    }): number;
+    getNeighbors(node: {
+        x: number;
+        y: number;
+    }): {
+        x: number;
+        y: number;
+    }[];
     ensurePlayerNotOnObstacle(): void;
     ensurePrizeNotOnObstacle(): void;
     drawGrid(): void;

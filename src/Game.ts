@@ -77,7 +77,8 @@ export class GameBoard extends LitElement {
   }
 
   startTimer() {
-    this.timer = 60; // Start the timer from 60 seconds
+    const baseTime = 60; // Base time in seconds
+    this.timer = Math.floor(baseTime / this.difficulty); // Adjust timer based on difficulty
     this.intervalId = window.setInterval(() => {
       this.timer--;
       this.requestUpdate();
@@ -97,13 +98,81 @@ export class GameBoard extends LitElement {
   }
 
   randomizeObstacles() {
-    for (let row = 0; row < this.rows; row++) {
-      for (let column = 0; column < this.columns; column++) {
-        if (Math.random() < this.difficulty) {
-          this.grid[row][column] = true;
+    do {
+      this.grid = Array.from({ length: this.rows }, () => Array(this.columns).fill(false));
+      for (let row = 0; row < this.rows; row++) {
+        for (let column = 0; column < this.columns; column++) {
+          if (Math.random() < this.difficulty) {
+            this.grid[row][column] = true;
+          }
+        }
+      }
+    } while (!this.isPathAvailable());
+  }
+
+  isPathAvailable(): boolean {
+    const start = { x: this.playerIndexX, y: this.playerIndexY };
+    const goal = { x: this.prizeIndexX, y: this.prizeIndexY };
+    const openSet = [start];
+    const cameFrom: { [key: string]: { x: number; y: number } | null } = {};
+    const gScore: { [key: string]: number } = {};
+    const fScore: { [key: string]: number } = {};
+  
+    gScore[`${start.x},${start.y}`] = 0;
+    fScore[`${start.x},${start.y}`] = this.heuristic(start, goal);
+  
+    while (openSet.length > 0) {
+      openSet.sort((a, b) => fScore[`${a.x},${a.y}`] - fScore[`${b.x},${b.y}`]);
+      const current = openSet.shift()!;
+      if (current.x === goal.x && current.y === goal.y) {
+        return true;
+      }
+  
+      const neighbors = this.getNeighbors(current);
+      for (const neighbor of neighbors) {
+        const tentativeGScore = gScore[`${current.x},${current.y}`] + 1;
+        if (tentativeGScore < (gScore[`${neighbor.x},${neighbor.y}`] || Infinity)) {
+          cameFrom[`${neighbor.x},${neighbor.y}`] = current;
+          gScore[`${neighbor.x},${neighbor.y}`] = tentativeGScore;
+          fScore[`${neighbor.x},${neighbor.y}`] = tentativeGScore + this.heuristic(neighbor, goal);
+          if (!openSet.some(n => n.x === neighbor.x && n.y === neighbor.y)) {
+            openSet.push(neighbor);
+          }
         }
       }
     }
+  
+    return false;
+  }
+
+  heuristic(a: { x: number; y: number }, b: { x: number; y: number }): number {
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+  }
+
+  getNeighbors(node: { x: number; y: number }): { x: number; y: number }[] {
+    const neighbors = [];
+    const directions = [
+      { x: 0, y: -1 },
+      { x: 0, y: 1 },
+      { x: -1, y: 0 },
+      { x: 1, y: 0 },
+    ];
+  
+    for (const direction of directions) {
+      const neighborX = node.x + direction.x;
+      const neighborY = node.y + direction.y;
+      if (
+        neighborX >= 0 &&
+        neighborX < this.columns &&
+        neighborY >= 0 &&
+        neighborY < this.rows &&
+        !this.grid[neighborY][neighborX]
+      ) {
+        neighbors.push({ x: neighborX, y: neighborY });
+      }
+    }
+  
+    return neighbors;
   }
 
   ensurePlayerNotOnObstacle() {

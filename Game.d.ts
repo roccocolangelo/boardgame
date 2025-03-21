@@ -14,6 +14,7 @@ export declare class GameBoard extends LitElement {
     prizeVisible: boolean;
     showModal: boolean;
     timer: number;
+    gameOver: boolean;
     private intervalId;
     private canvas;
     private ctx;

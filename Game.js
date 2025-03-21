@@ -23,6 +23,7 @@ let GameBoard = class GameBoard extends LitElement {
         this.prizeVisible = true; // property to track prize visibility
         this.showModal = false; // property to track modal visibility
         this.timer = 60; // property to track the timer (starting from 60 seconds)
+        this.gameOver = false; // property to track game over state
         this.intervalId = null; // interval ID for the timer
         this.playerImage = new Image();
         this.obstacleImage = new Image();
@@ -59,6 +60,7 @@ let GameBoard = class GameBoard extends LitElement {
             this.requestUpdate();
             if (this.timer <= 0) {
                 this.stopTimer();
+                this.gameOver = true; // Set game over state when time runs out
                 this.showModal = true; // Show the modal when time runs out
             }
         }, 1000); // Update the timer every second
@@ -131,6 +133,8 @@ let GameBoard = class GameBoard extends LitElement {
         this.ctx.strokeRect(prizePixelX, prizePixelY, this.cellWidth, this.cellHeight);
     }
     handleKeyPress(event) {
+        if (this.gameOver)
+            return; // Prevent movement if the game is over
         switch (event.key) {
             case 'ArrowUp':
                 if (this.playerIndexY > 0 && !this.grid[this.playerIndexY - 1][this.playerIndexX]) {
@@ -185,7 +189,7 @@ let GameBoard = class GameBoard extends LitElement {
       <div class="modal ${this.showModal ? 'show' : ''}">
         <div class="modal-content">
           <span @click="${this.closeModal}" style="cursor: pointer;float:right;">&times;</span>
-          <p>You Win!!</p>
+          <p>${this.gameOver ? 'Game Over' : 'You Win!!'}</p>
         </div>
       </div>
     `;
@@ -249,6 +253,9 @@ __decorate([
 __decorate([
     property({ type: Number })
 ], GameBoard.prototype, "timer", void 0);
+__decorate([
+    property({ type: Boolean })
+], GameBoard.prototype, "gameOver", void 0);
 GameBoard = __decorate([
     customElement('game-board')
 ], GameBoard);

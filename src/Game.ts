@@ -37,6 +37,7 @@ export class GameBoard extends LitElement {
   @property({ type: Boolean }) prizeVisible = true; // property to track prize visibility
   @property({ type: Boolean }) showModal = false; // property to track modal visibility
   @property({ type: Number }) timer = 60; // property to track the timer (starting from 60 seconds)
+  @property({ type: Boolean }) gameOver = false; // property to track game over state
   private intervalId: number | null = null; // interval ID for the timer
 
   private canvas!: HTMLCanvasElement;
@@ -82,6 +83,7 @@ export class GameBoard extends LitElement {
       this.requestUpdate();
       if (this.timer <= 0) {
         this.stopTimer();
+        this.gameOver = true; // Set game over state when time runs out
         this.showModal = true; // Show the modal when time runs out
       }
     }, 1000); // Update the timer every second
@@ -163,6 +165,8 @@ export class GameBoard extends LitElement {
   }
 
   handleKeyPress(event: KeyboardEvent) {
+    if (this.gameOver) return; // Prevent movement if the game is over
+
     switch (event.key) {
       case 'ArrowUp':
         if (this.playerIndexY > 0 && !this.grid[this.playerIndexY - 1][this.playerIndexX]) {
@@ -221,7 +225,7 @@ export class GameBoard extends LitElement {
       <div class="modal ${this.showModal ? 'show' : ''}">
         <div class="modal-content">
           <span @click="${this.closeModal}" style="cursor: pointer;float:right;">&times;</span>
-          <p>You Win!!</p>
+          <p>${this.gameOver ? 'Game Over' : 'You Win!!'}</p>
         </div>
       </div>
     `;
